@@ -127,6 +127,7 @@ class Session {
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
+    Response Download(std::ostream& ostream_buff);
     Response Get();
     Response Head();
     Response Options();

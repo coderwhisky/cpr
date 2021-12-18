@@ -71,6 +71,7 @@ class Session::Impl {
     Response Delete();
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
+    Response Download(std::ostream& ostream_buff);
     Response Get();
     Response Head();
     Response Options();
@@ -588,6 +589,16 @@ Response Session::Impl::Download(std::ofstream& file) {
     return makeDownloadRequest();
 }
 
+Response Session::Impl::Download(std::ostream& ostream_buff) {
+    curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
+    curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &ostream_buff);
+
+    return makeDownloadRequest();
+}
+
+
 void Session::Impl::PrepareGet() {
     // In case there is a body or payload for this request, we create a custom GET-Request since a
     // GET-Request with body is based on the HTTP RFC **not** a leagal request.
@@ -881,6 +892,7 @@ cpr_off_t Session::GetDownloadFileLength() { return pimpl_->GetDownloadFileLengt
 Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
+Response Session::Download(std::ostream& ostream_buff) { return pimpl_->Download(ostream_buff); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Options() { return pimpl_->Options(); }
