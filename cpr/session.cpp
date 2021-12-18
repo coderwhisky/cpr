@@ -72,7 +72,7 @@ class Session::Impl {
     Response Download(const WriteCallback& write);
     Response Download(std::ofstream& file);
     Response Download(std::ostream& ostream_buff);
-    Response Download(char& bytes);
+    Response Download(char* bytes);
     Response Get();
     Response Head();
     Response Options();
@@ -599,11 +599,11 @@ Response Session::Impl::Download(std::ostream& ostream_buff) {
     return makeDownloadRequest();
 }
 
-Response Session::Impl::Download(char& bytes) {
+Response Session::Impl::Download(char* bytes) {
     curl_easy_setopt(curl_->handle, CURLOPT_NOBODY, 0L);
     curl_easy_setopt(curl_->handle, CURLOPT_HTTPGET, 1);
     curl_easy_setopt(curl_->handle, CURLOPT_WRITEFUNCTION, cpr::util::writeFileFunction);
-    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, &bytes);
+    curl_easy_setopt(curl_->handle, CURLOPT_WRITEDATA, bytes);
 
     return makeDownloadRequest();
 }
@@ -903,7 +903,7 @@ Response Session::Delete() { return pimpl_->Delete(); }
 Response Session::Download(const WriteCallback& write) { return pimpl_->Download(write); }
 Response Session::Download(std::ofstream& file) { return pimpl_->Download(file); }
 Response Session::Download(std::ostream& ostream_buff) { return pimpl_->Download(ostream_buff); }
-Response Session::Download(char& bytes) { return pimpl_->Download(bytes); }
+Response Session::Download(char* bytes) { return pimpl_->Download(bytes); }
 Response Session::Get() { return pimpl_->Get(); }
 Response Session::Head() { return pimpl_->Head(); }
 Response Session::Options() { return pimpl_->Options(); }
